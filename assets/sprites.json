@@ -1,0 +1,205 @@
+{
+  "wild": {
+    "x": 22,
+    "y": 18,
+    "w": 297,
+    "h": 282,
+    "file": "assets/wild.png"
+  },
+  "scatter": {
+    "x": 319,
+    "y": 13,
+    "w": 321,
+    "h": 295,
+    "file": "assets/scatter.png"
+  },
+  "zhong": {
+    "x": 21,
+    "y": 330,
+    "w": 162,
+    "h": 182,
+    "file": "assets/zhong.png"
+  },
+  "fa": {
+    "x": 191,
+    "y": 330,
+    "w": 162,
+    "h": 182,
+    "file": "assets/fa.png"
+  },
+  "dong": {
+    "x": 363,
+    "y": 330,
+    "w": 161,
+    "h": 182,
+    "file": "assets/dong.png"
+  },
+  "nan": {
+    "x": 531,
+    "y": 330,
+    "w": 160,
+    "h": 182,
+    "file": "assets/nan.png"
+  },
+  "xi": {
+    "x": 702,
+    "y": 330,
+    "w": 158,
+    "h": 182,
+    "file": "assets/xi.png"
+  },
+  "bei": {
+    "x": 869,
+    "y": 330,
+    "w": 164,
+    "h": 182,
+    "file": "assets/bei.png"
+  },
+  "wan_1": {
+    "x": 1043,
+    "y": 330,
+    "w": 156,
+    "h": 181,
+    "file": "assets/wan_1.png"
+  },
+  "wan_2": {
+    "x": 1205,
+    "y": 330,
+    "w": 152,
+    "h": 181,
+    "file": "assets/wan_2.png"
+  },
+  "wan_3": {
+    "x": 1368,
+    "y": 330,
+    "w": 154,
+    "h": 180,
+    "file": "assets/wan_3.png"
+  },
+  "tong_1": {
+    "x": 21,
+    "y": 526,
+    "w": 162,
+    "h": 167,
+    "file": "assets/tong_1.png"
+  },
+  "tong_2": {
+    "x": 191,
+    "y": 526,
+    "w": 161,
+    "h": 167,
+    "file": "assets/tong_2.png"
+  },
+  "tong_4": {
+    "x": 363,
+    "y": 526,
+    "w": 162,
+    "h": 166,
+    "file": "assets/tong_4.png"
+  },
+  "tong_5": {
+    "x": 531,
+    "y": 526,
+    "w": 162,
+    "h": 165,
+    "file": "assets/tong_5.png"
+  },
+  "tong_6": {
+    "x": 702,
+    "y": 526,
+    "w": 159,
+    "h": 166,
+    "file": "assets/tong_6.png"
+  },
+  "tong_9": {
+    "x": 867,
+    "y": 526,
+    "w": 162,
+    "h": 165,
+    "file": "assets/tong_9.png"
+  },
+  "tiao_1": {
+    "x": 1039,
+    "y": 526,
+    "w": 155,
+    "h": 165,
+    "file": "assets/tiao_1.png"
+  },
+  "tiao_2": {
+    "x": 1203,
+    "y": 526,
+    "w": 155,
+    "h": 165,
+    "file": "assets/tiao_2.png"
+  },
+  "tiao_3": {
+    "x": 1368,
+    "y": 526,
+    "w": 154,
+    "h": 164,
+    "file": "assets/tiao_3.png"
+  },
+  "tiao_6": {
+    "x": 21,
+    "y": 704,
+    "w": 162,
+    "h": 168,
+    "file": "assets/tiao_6.png"
+  },
+  "tiao_8": {
+    "x": 191,
+    "y": 704,
+    "w": 162,
+    "h": 168,
+    "file": "assets/tiao_8.png"
+  },
+  "tiao_10": {
+    "x": 363,
+    "y": 704,
+    "w": 164,
+    "h": 168,
+    "file": "assets/tiao_10.png"
+  },
+  "bird": {
+    "x": 532,
+    "y": 704,
+    "w": 161,
+    "h": 168,
+    "file": "assets/bird.png"
+  },
+  "bai": {
+    "x": 703,
+    "y": 704,
+    "w": 159,
+    "h": 168,
+    "file": "assets/bai.png"
+  },
+  "flower_plum": {
+    "x": 868,
+    "y": 704,
+    "w": 163,
+    "h": 168,
+    "file": "assets/flower_plum.png"
+  },
+  "flower_chrys": {
+    "x": 1039,
+    "y": 704,
+    "w": 155,
+    "h": 168,
+    "file": "assets/flower_chrys.png"
+  },
+  "flower_bamboo": {
+    "x": 1204,
+    "y": 704,
+    "w": 155,
+    "h": 168,
+    "file": "assets/flower_bamboo.png"
+  },
+  "flower_maple": {
+    "x": 1368,
+    "y": 704,
+    "w": 154,
+    "h": 168,
+    "file": "assets/flower_maple.png"
+  }
+}

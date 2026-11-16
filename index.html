@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Mahjong Gold – Arcade Slot</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="festival-bg" aria-hidden="true">
+    <div class="lantern lantern-left"></div>
+    <div class="lantern lantern-right"></div>
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="coin-orbit coin-1"></div>
+    <div class="coin-orbit coin-2"></div>
+    <div class="coin-orbit coin-3"></div>
+  </div>
+
+  <!-- Halaman 1: Login / Register -->
+  <section id="authScreen" class="screen-shell" aria-label="Masuk atau Daftar Akun">
+    <div class="auth-page-card">
+      <div class="auth-page-brand">
+        <div class="brand-emblem" aria-hidden="true">發</div>
+        <div>
+          <h1>ARCADE FESTIVAL</h1>
+          <p class="subtitle">Masuk atau daftar untuk membuka menu game</p>
+        </div>
+      </div>
+
+      <div class="auth-tabs" role="tablist">
+        <button id="screenTabLogin" class="auth-tab active" type="button" role="tab" aria-selected="true">Masuk</button>
+        <button id="screenTabRegister" class="auth-tab" type="button" role="tab" aria-selected="false">Daftar</button>
+      </div>
+
+      <div id="authScreenFeedback" class="auth-feedback hidden" role="alert"></div>
+
+      <form id="screenLoginForm" class="auth-form">
+        <label class="auth-field">
+          <span>Username</span>
+          <input id="screenLoginUsername" type="text" autocomplete="username" placeholder="Masukkan username" required />
+        </label>
+        <label class="auth-field">
+          <span>Password</span>
+          <input id="screenLoginPassword" type="password" autocomplete="current-password" placeholder="Masukkan password" required />
+        </label>
+        <button type="submit" class="auth-submit-btn">MASUK</button>
+      </form>
+
+      <form id="screenRegisterForm" class="auth-form hidden">
+        <label class="auth-field">
+          <span>Username</span>
+          <input id="screenRegUsername" type="text" autocomplete="username" placeholder="3–20 karakter (huruf/angka/_)" required />
+        </label>
+        <label class="auth-field">
+          <span>Password</span>
+          <input id="screenRegPassword" type="password" autocomplete="new-password" placeholder="Minimal 4 karakter" required />
+        </label>
+        <label class="auth-field">
+          <span>Konfirmasi Password</span>
+          <input id="screenRegConfirm" type="password" autocomplete="new-password" placeholder="Ulangi password" required />
+        </label>
+        <button type="submit" class="auth-submit-btn">DAFTAR &amp; MASUK</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Halaman 2: Menu / Lobby Game -->
+  <section id="lobbyScreen" class="screen-shell hidden" aria-label="Menu Pilihan Game">
+    <div class="lobby-container">
+      <header class="lobby-header">
+        <div class="lobby-brand">
+          <div class="brand-emblem" aria-hidden="true">發</div>
+          <div>
+            <h1>MENU GAME</h1>
+            <p class="subtitle">Pilih game untuk mulai bermain</p>
+          </div>
+        </div>
+        <div class="lobby-user-bar">
+          <div class="lobby-user-pill">
+            <span class="acc-ico">👤</span>
+            <strong id="lobbyUsername">-</strong>
+            <span class="lobby-sep">•</span>
+            <span id="lobbySaldo" class="lobby-saldo">Rp 0</span>
+          </div>
+          <button id="btnLobbyLogout" class="lobby-logout-btn" type="button">Keluar</button>
+        </div>
+      </header>
+
+      <div class="lobby-section-title">DAFTAR GAME</div>
+      <div id="gameCatalogGrid" class="game-catalog-grid"></div>
+    </div>
+  </section>
+
+  <!-- Halaman 2B: Dashboard Admin -->
+  <section id="adminScreen" class="screen-shell hidden" aria-label="Dashboard Admin">
+    <div class="lobby-container admin-container">
+      <header class="lobby-header">
+        <div class="lobby-brand">
+          <div class="brand-emblem" aria-hidden="true">🛡️</div>
+          <div>
+            <h1>DASHBOARD ADMIN</h1>
+            <p class="subtitle">Atur saldo, peluang menang, &amp; bonus pemain</p>
+          </div>
+        </div>
+        <div class="lobby-user-bar">
+          <div id="adminFbStatus" class="fb-status-pill">🟡 Lokal</div>
+          <div class="lobby-user-pill">
+            <span class="acc-ico">👑</span>
+            <strong>admin</strong>
+          </div>
+          <button id="btnAdminLogout" class="lobby-logout-btn" type="button">Keluar</button>
+        </div>
+      </header>
+
+      <div class="admin-kpi-row">
+        <div class="admin-kpi-card">
+          <span>Total Pemain</span>
+          <strong id="adminTotalPlayers">0</strong>
+        </div>
+        <div class="admin-kpi-card">
+          <span>Total Saldo Pemain</span>
+          <strong id="adminTotalSaldo">Rp 0</strong>
+        </div>
+        <div class="admin-kpi-card">
+          <span>User Dipilih</span>
+          <strong id="adminSelectedName">-</strong>
+        </div>
+      </div>
+
+      <div class="admin-selector-box">
+        <label class="auth-field" for="adminUserSelect">
+          <span>Pilih Akun Pemain</span>
+          <select id="adminUserSelect" class="admin-select"></select>
+        </label>
+      </div>
+
+      <div id="adminEmptyState" class="admin-empty hidden">
+        Belum ada pemain terdaftar. Buat akun pemain terlebih dahulu di halaman Daftar, lalu atur permainannya di sini.
+      </div>
+
+      <div id="adminControlCard" class="admin-control-card hidden">
+        <div id="adminFeedback" class="auth-feedback hidden" role="status"></div>
+
+        <div class="admin-form-grid">
+          <label class="auth-field">
+            <span>Saldo Virtual (Rp)</span>
+            <input id="adminSaldoInput" type="number" min="0" step="1000" />
+          </label>
+
+          <label class="auth-field">
+            <span>Mode Permainan User</span>
+            <select id="adminPlayMode" class="admin-select">
+              <option value="normal">Normal (Acak Seimbang)</option>
+              <option value="win">Win (Mudah Menang / Gacor)</option>
+              <option value="loss">Loss (Tarik Ulur • Turun Bertahap)</option>
+            </select>
+          </label>
+
+          <label class="auth-field">
+            <span>Mode Pengali Cascade</span>
+            <select id="adminMultMode" class="admin-select">
+              <option value="normal">Normal (X1 – X5)</option>
+              <option value="boost">Boost (X2 – X10)</option>
+            </select>
+          </label>
+
+          <label class="auth-field">
+            <span>Scatter Pending (Muncul di Spin ke-N)</span>
+            <input id="adminScatterDelay" type="number" min="0" max="50" step="1" placeholder="0 = nonaktif, misal 5" />
+          </label>
+
+          <label class="auth-field">
+            <span>Jumlah Simbol Scatter</span>
+            <select id="adminScatterCount" class="admin-select">
+              <option value="3">3 Scatter (12 Free Spin)</option>
+              <option value="4">4 Scatter (14 Free Spin)</option>
+              <option value="5">5 Scatter (16 Free Spin)</option>
+              <option value="6">6 Scatter (18 Free Spin)</option>
+            </select>
+          </label>
+
+          <label class="auth-field">
+            <span>Target Total Hasil Scatter (Rp)</span>
+            <input id="adminScatterTarget" type="number" min="0" step="5000" placeholder="0 = acak normal" />
+          </label>
+        </div>
+
+        <div class="admin-quick-saldo">
+          <button id="btnAdminAdd50k" type="button" class="admin-chip-btn">+Rp 50.000</button>
+          <button id="btnAdminAdd100k" type="button" class="admin-chip-btn">+Rp 100.000</button>
+          <button id="btnAdminReset100k" type="button" class="admin-chip-btn">Reset Rp 100.000</button>
+        </div>
+
+        <div class="admin-toggles">
+          <label class="admin-check">
+            <input id="adminSuspended" type="checkbox" />
+            <span>Nonaktifkan akun pemain ini sementara</span>
+          </label>
+        </div>
+
+        <div class="admin-actions-row">
+          <button id="btnAdminSave" type="button" class="auth-submit-btn">SIMPAN PENGATURAN</button>
+          <button id="btnAdminDeleteUser" type="button" class="admin-delete-btn">Hapus Akun</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="gameScreen" class="game-shell hidden">
+    <!-- Top Festival Header -->
+    <header class="game-header">
+      <div class="brand-row">
+        <div class="brand-emblem" aria-hidden="true">發</div>
+        <div class="brand-titles">
+          <h1>MAHJONG GOLD</h1>
+          <p class="subtitle">1024 Ways • Cascade &amp; Gold Wild</p>
+        </div>
+        <div class="header-actions">
+          <button id="btnBackToMenu" class="icon-btn back-menu-btn" type="button" title="Kembali ke Menu Game" aria-label="Kembali ke Menu Game">← Menu</button>
+          <button id="btnAccount" class="icon-btn account-btn" type="button" title="Akun (Masuk / Daftar)" aria-label="Akun"><span class="acc-ico">👤</span><span id="accountBtnLabel">Masuk</span></button>
+          <button id="btnPaytable" class="icon-btn" type="button" title="Panduan &amp; Nilai Simbol" aria-label="Panduan &amp; Nilai Simbol">?</button>
+          <button id="btnSpeed" class="icon-btn turbo-btn" type="button" title="Mode Turbo (Gulir Cepat)" aria-label="Mode Turbo" aria-pressed="false"><svg class="turbo-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 10-12h-7l0-8z"/></svg><span>TURBO</span></button>
+          <button id="btnSound" class="icon-btn" type="button" title="Pengaturan Suara" aria-label="Pengaturan Suara">🔊</button>
+        </div>
+      </div>
+
+      <!-- Multiplier Bar -->
+      <div class="multiplier-bar" id="multiplierBar" aria-label="Pengali Cascade">
+        <span class="mult-label">PENGALI</span>
+        <div class="mult-steps">
+          <div class="mult-pill active" data-step="0" data-val="1">X1</div>
+          <div class="mult-pill" data-step="1" data-val="2">X2</div>
+          <div class="mult-pill" data-step="2" data-val="3">X3</div>
+          <div class="mult-pill" data-step="3" data-val="5">X5</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Bonus Mode Banner (Hidden unless Bonus Active) -->
+    <section id="bonusBanner" class="bonus-banner hidden" aria-live="polite">
+      <div class="bonus-badge">BONUS FESTIVAL</div>
+      <div class="bonus-stats">
+        <span>Putaran Gratis: <strong id="bonusSpinsLeft">0</strong></span>
+        <span>Target Bonus: <strong id="bonusProgress">Rp 0</strong> / <strong id="bonusTarget">Rp 25.000</strong></span>
+      </div>
+    </section>
+
+    <!-- Main 5x4 Mahjong Grid -->
+    <main class="board-stage">
+      <div class="board-frame">
+        <div class="corner-ornament tl"></div>
+        <div class="corner-ornament tr"></div>
+        <div class="corner-ornament bl"></div>
+        <div class="corner-ornament br"></div>
+
+        <div class="grid-wrapper" id="gridWrapper">
+          <div class="mahjong-grid" id="mahjongGrid" role="grid" aria-label="Papan Mahjong 5x4"></div>
+          <canvas id="fxCanvas" class="fx-canvas" aria-hidden="true"></canvas>
+          <div id="winBanner" class="win-banner hidden" aria-live="polite">
+            <span id="winBannerText">MENANG!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Combo & Cascade Strip -->
+      <div class="status-strip">
+        <div class="status-chip">
+          <span class="chip-label">COMBO</span>
+          <strong id="comboCounter">0</strong>
+        </div>
+        <div class="status-chip">
+          <span class="chip-label">CASCADE</span>
+          <strong id="cascadeCounter">0</strong>
+        </div>
+        <div class="status-chip highlight">
+          <span class="chip-label">PENGALI AKTIF</span>
+          <strong id="activeMultiplier">X1</strong>
+        </div>
+      </div>
+    </main>
+
+    <!-- Scoreboard & Controls -->
+    <footer class="control-dock">
+      <div class="score-grid">
+        <div class="score-card">
+          <span class="score-label">SALDO</span>
+          <strong class="score-value" id="totalScore">Rp 100.000</strong>
+        </div>
+        <div class="score-card accent">
+          <span class="score-label">MENANG</span>
+          <strong class="score-value" id="lastWin">Rp 0</strong>
+        </div>
+        <div class="score-card">
+          <span class="score-label" id="pecahanLabel">PECAHAN</span>
+          <strong class="score-value" id="bestScore">Rp 0</strong>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <div class="bet-control">
+          <span class="bet-label">TARUHAN</span>
+          <div class="bet-stepper">
+            <button id="btnBetDown" class="step-btn" type="button" aria-label="Kurangi Taruhan">−</button>
+            <strong id="spinCost">Rp 1.000</strong>
+            <button id="btnBetUp" class="step-btn" type="button" aria-label="Tambah Taruhan">+</button>
+          </div>
+        </div>
+
+        <button id="btnSpin" class="spin-btn" type="button">
+          <span class="spin-ring"></span>
+          <span class="spin-text">SPIN</span>
+        </button>
+
+        <div class="auto-spin-wrap">
+          <div id="autoSpinMenu" class="auto-spin-menu hidden" role="menu" aria-label="Pilih Jumlah Auto Spin">
+            <button type="button" class="auto-opt" data-count="10">10x</button>
+            <button type="button" class="auto-opt" data-count="30">30x</button>
+            <button type="button" class="auto-opt" data-count="50">50x</button>
+            <button type="button" class="auto-opt" data-count="100">100x</button>
+          </div>
+          <button id="btnAutoSpin" class="auto-spin-btn" type="button" title="Putaran Otomatis">
+            <span id="autoSpinLabel">AUTO SPIN</span>
+          </button>
+        </div>
+      </div>
+      <p class="virtual-note">Saldo menggunakan kurs Rupiah virtual untuk hiburan arcade — bukan uang asli.</p>
+    </footer>
+  </div>
+
+  <!-- Paytable & Rules Modal -->
+  <div id="paytableModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="modalTitle">Panduan &amp; Nilai Simbol</h2>
+        <button id="btnCloseModal" class="close-btn" type="button" aria-label="Tutup">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="rules-summary">
+          <p><strong>Ways to Win (1024 Ways):</strong> Cocokkan simbol identik di minimal 3 kolom berurutan dari kiri ke kanan. Total kombinasi = perkalian jumlah simbol cocok per kolom.</p>
+          <p><strong>Gold Symbol → WILD:</strong> Simbol berbingkai emas yang ikut membentuk kemenangan akan berubah menjadi <strong>WILD</strong> bercahaya emas untuk cascade berikutnya!</p>
+          <p><strong>SCATTER Bonus:</strong> Kumpulkan 3 SCATTER = 12, 4 = 14, 5 = 16, 6 = 18 Putaran Gratis Otomatis Festival dengan pengali ganda (X2, X4, X6, X10) dan hadiah target bonus Rupiah.</p>
+        </div>
+        <div id="paytableGrid" class="paytable-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bonus Transition Overlay -->
+  <div id="bonusOverlay" class="bonus-overlay hidden" aria-live="assertive">
+    <div class="bonus-modal">
+      <div class="bonus-glow"></div>
+      <h2 id="bonusOverlayTitle">FESTIVAL BONUS AKTIF!</h2>
+      <p id="bonusOverlayDesc">3+ SCATTER terkumpul! Dapatkan Free Spin Otomatis dengan Pengali Ganda!</p>
+      <button id="btnStartBonus" class="spin-btn compact" type="button">MULAI BONUS</button>
+    </div>
+  </div>
+
+  <!-- Modal Akun (Login & Registrasi) -->
+  <div id="authModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+    <div class="modal-card auth-card">
+      <div class="modal-head">
+        <h2 id="authModalTitle">AKUN PEMAIN</h2>
+        <button id="btnCloseAuthModal" class="icon-btn" type="button" aria-label="Tutup">✕</button>
+      </div>
+
+      <!-- Tampilan Belum Login -->
+      <div id="authGuestView">
+        <div class="auth-tabs" role="tablist">
+          <button id="tabLogin" class="auth-tab active" type="button" role="tab" aria-selected="true">Masuk</button>
+          <button id="tabRegister" class="auth-tab" type="button" role="tab" aria-selected="false">Daftar</button>
+        </div>
+
+        <div id="authFeedback" class="auth-feedback hidden" role="alert"></div>
+
+        <!-- Form Login -->
+        <form id="loginForm" class="auth-form">
+          <label class="auth-field">
+            <span>Username</span>
+            <input id="loginUsername" type="text" autocomplete="username" placeholder="Masukkan username" required />
+          </label>
+          <label class="auth-field">
+            <span>Password</span>
+            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Masukkan password" required />
+          </label>
+          <button type="submit" class="auth-submit-btn">MASUK</button>
+        </form>
+
+        <!-- Form Registrasi -->
+        <form id="registerForm" class="auth-form hidden">
+          <label class="auth-field">
+            <span>Username</span>
+            <input id="regUsername" type="text" autocomplete="username" placeholder="3–20 karakter (huruf/angka/_)" required />
+          </label>
+          <label class="auth-field">
+            <span>Password</span>
+            <input id="regPassword" type="password" autocomplete="new-password" placeholder="Minimal 4 karakter" required />
+          </label>
+          <label class="auth-field">
+            <span>Konfirmasi Password</span>
+            <input id="regConfirm" type="password" autocomplete="new-password" placeholder="Ulangi password" required />
+          </label>
+          <button type="submit" class="auth-submit-btn">DAFTAR AKUN</button>
+        </form>
+        <p class="auth-note">Akun dan saldo virtual disimpan lokal di perangkat Anda.</p>
+      </div>
+
+      <!-- Tampilan Sudah Login -->
+      <div id="authProfileView" class="hidden">
+        <div class="profile-summary">
+          <div class="profile-avatar" aria-hidden="true">👤</div>
+          <div>
+            <div class="profile-name" id="profileUsername">-</div>
+            <div class="profile-sub">Akun Aktif</div>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <span>Saldo Virtual</span>
+            <strong id="profileSaldo">Rp 0</strong>
+          </div>
+          <div class="profile-stat">
+            <span>Rekor Terbaik</span>
+            <strong id="profileBest">Rp 0</strong>
+          </div>
+        </div>
+        <button id="btnLogout" class="auth-logout-btn" type="button">KELUAR (LOGOUT)</button>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="symbols.js"></script>
+  <script defer src="grid.js"></script>
+  <script defer src="winSystem.js"></script>
+  <script defer src="wildSystem.js"></script>
+  <script defer src="cascade.js"></script>
+  <script defer src="animation.js"></script>
+  <script defer src="audio.js"></script>
+  <script defer src="auth.js"></script>
+  <script defer src="game.js"></script>
+</body>
+</html>
