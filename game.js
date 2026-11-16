@@ -717,7 +717,7 @@ MG.Game = (() => {
 
     els.screenLoginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const res = MG.Auth.login(els.screenLoginUsername.value, els.screenLoginPassword.value);
+      const res = await MG.Auth.login(els.screenLoginUsername.value, els.screenLoginPassword.value);
       if (!res.ok) {
         showScreenAuthFeedback(res.error);
         return;

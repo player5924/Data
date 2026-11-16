@@ -24,6 +24,13 @@ MG.Auth = (() => {
   let allUsersListener = null;
   let connectionListeners = [];
 
+  function withTimeout(promise, ms = 3000) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+    ]);
+  }
+
   function initFirebase() {
     try {
       if (typeof window.firebase !== 'undefined' && window.firebase.database) {
@@ -167,13 +174,13 @@ MG.Auth = (() => {
     const localUsers = loadUsersLocal();
     if (db) {
       try {
-        const adminSnap = await db.ref(`${DB_ROOT}/admin`).once('value');
+        const adminSnap = await withTimeout(db.ref(`${DB_ROOT}/admin`).once('value'));
         if (!adminSnap.exists()) {
-          await db.ref(`${DB_ROOT}/admin`).set(localUsers.admin);
+          await withTimeout(db.ref(`${DB_ROOT}/admin`).set(localUsers.admin));
         }
         const key = getSessionKey();
         if (key) {
-          const snap = await db.ref(`${DB_ROOT}/${key}`).once('value');
+          const snap = await withTimeout(db.ref(`${DB_ROOT}/${key}`).once('value'));
           if (snap.exists()) {
             const u = snap.val();
             localUsers[key] = u;
@@ -208,7 +215,7 @@ MG.Auth = (() => {
     const users = loadUsersLocal();
     if (db) {
       try {
-        const snap = await db.ref(`${DB_ROOT}/${key}`).once('value');
+        const snap = await withTimeout(db.ref(`${DB_ROOT}/${key}`).once('value'));
         if (snap.exists()) {
           return { ok: false, error: 'Username sudah terdaftar di Firebase. Silakan masuk.' };
         }
@@ -232,7 +239,7 @@ MG.Auth = (() => {
     saveUsersLocal(users);
     if (db) {
       try {
-        await db.ref(`${DB_ROOT}/${key}`).set(newUser);
+        await withTimeout(db.ref(`${DB_ROOT}/${key}`).set(newUser));
       } catch {}
     }
     setSessionKey(key);
@@ -251,7 +258,7 @@ MG.Auth = (() => {
 
     if (db) {
       try {
-        const snap = await db.ref(`${DB_ROOT}/${key}`).once('value');
+        const snap = await withTimeout(db.ref(`${DB_ROOT}/${key}`).once('value'));
         if (snap.exists()) {
           user = snap.val();
           users[key] = user;
