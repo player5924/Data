@@ -1364,3 +1364,102 @@ html, body {
   border-color: rgba(74, 222, 128, 0.6);
   color: #bbf7d0;
 }
+
+
+/* Mobile Responsive Header & Controls Fix */
+.bet-value {
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .game-header {
+    padding: 10px 10px;
+  }
+  .brand-row {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .brand-emblem {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+  .brand-titles {
+    flex: 1 1 calc(100% - 50px);
+    min-width: 160px;
+  }
+  .brand-titles h1 {
+    font-size: 1.12rem;
+    white-space: nowrap;
+  }
+  .subtitle {
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .header-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .header-actions .icon-btn {
+    height: 34px;
+    font-size: 0.74rem;
+  }
+  .header-actions .back-menu-btn,
+  .header-actions .account-btn,
+  .header-actions .turbo-btn {
+    padding: 0 9px;
+  }
+  .bet-control {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+  .bet-value {
+    font-size: 0.85rem;
+    min-width: 64px;
+    text-align: center;
+  }
+  .stat-pill {
+    font-size: 0.68rem;
+    padding: 6px 7px;
+  }
+}
+
+
+/* Admin Separate Bar Tabs */
+.admin-bar-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.admin-bar-tab {
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 209, 92, 0.32);
+  background: rgba(18, 4, 16, 0.72);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  text-align: center;
+}
+.admin-bar-tab.active {
+  background: linear-gradient(180deg, #ffdf73, #e69d12);
+  color: #4b080d;
+  border-color: #fff3bd;
+  box-shadow: 0 3px 10px rgba(244, 185, 50, 0.35);
+}
+.admin-tab-panel.hidden {
+  display: none;
+}
+@media (max-width: 520px) {
+  .admin-bar-tabs {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}

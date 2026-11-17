@@ -88,6 +88,12 @@ MG.Game = (() => {
     els.adminSuspended = document.getElementById('adminSuspended');
     els.btnAdminSave = document.getElementById('btnAdminSave');
     els.btnAdminDeleteUser = document.getElementById('btnAdminDeleteUser');
+    els.adminBarTabs = document.querySelectorAll('.admin-bar-tab');
+    els.adminPanelWinLoss = document.getElementById('adminPanelWinLoss');
+    els.adminPanelScatter = document.getElementById('adminPanelScatter');
+    els.adminPanelAccount = document.getElementById('adminPanelAccount');
+    els.btnAdminSaveWinLoss = document.getElementById('btnAdminSaveWinLoss');
+    els.btnAdminSaveScatter = document.getElementById('btnAdminSaveScatter');
     els.btnBackToMenu = document.getElementById('btnBackToMenu');
     els.btnAccount = document.getElementById('btnAccount');
     els.accountBtnLabel = document.getElementById('accountBtnLabel');
@@ -777,24 +783,69 @@ MG.Game = (() => {
       els.adminSaldoInput.value = '100000';
     });
 
+    function showAdminSavedMsg(msg, isSuccess = true) {
+      els.adminFeedback.textContent = msg;
+      els.adminFeedback.classList.toggle('is-success', isSuccess);
+      els.adminFeedback.classList.remove('hidden');
+    }
+
+    function switchAdminBarTab(tabName) {
+      els.adminBarTabs.forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.adminTab === tabName);
+      });
+      if (els.adminPanelWinLoss) els.adminPanelWinLoss.classList.toggle('hidden', tabName !== 'winloss');
+      if (els.adminPanelScatter) els.adminPanelScatter.classList.toggle('hidden', tabName !== 'scatter');
+      if (els.adminPanelAccount) els.adminPanelAccount.classList.toggle('hidden', tabName !== 'account');
+    }
+
+    els.adminBarTabs.forEach((btn) => {
+      btn.addEventListener('click', () => switchAdminBarTab(btn.dataset.adminTab));
+    });
+
+    if (els.btnAdminSaveWinLoss) {
+      els.btnAdminSaveWinLoss.addEventListener('click', async () => {
+        if (!adminSelectedUsername) return;
+        const res = await MG.Auth.updatePlayerConfig(adminSelectedUsername, {
+          settings: {
+            playMode: els.adminPlayMode.value,
+            multMode: els.adminMultMode.value
+          }
+        });
+        if (!res.ok) { showAdminSavedMsg(res.error || 'Gagal menyimpan.', false); return; }
+        renderAdminDashboard();
+        showAdminSavedMsg(`Mode Win/Loss untuk "${adminSelectedUsername}" tersimpan & aktif.`);
+      });
+    }
+
+    if (els.btnAdminSaveScatter) {
+      els.btnAdminSaveScatter.addEventListener('click', async () => {
+        if (!adminSelectedUsername) return;
+        const res = await MG.Auth.updatePlayerConfig(adminSelectedUsername, {
+          settings: {
+            scatterDelaySpins: Math.max(0, Math.min(50, Number(els.adminScatterDelay.value) || 0)),
+            scatterTierCount: Math.max(3, Math.min(6, Number(els.adminScatterCount.value) || 3)),
+            scatterTargetPayout: Math.max(0, Math.round(Number(els.adminScatterTarget.value) || 0))
+          }
+        });
+        if (!res.ok) { showAdminSavedMsg(res.error || 'Gagal mengirim scatter.', false); return; }
+        renderAdminDashboard();
+        showAdminSavedMsg(`Scatter untuk "${adminSelectedUsername}" berhasil dijadwalkan.`);
+      });
+    }
+
     els.btnAdminSave.addEventListener('click', async () => {
       if (!adminSelectedUsername) return;
       const res = await MG.Auth.updatePlayerConfig(adminSelectedUsername, {
         totalScore: Number(els.adminSaldoInput.value),
         settings: {
-          playMode: els.adminPlayMode.value,
-          multMode: els.adminMultMode.value,
-          scatterDelaySpins: Math.max(0, Math.min(50, Number(els.adminScatterDelay.value) || 0)),
-          scatterTierCount: Math.max(3, Math.min(6, Number(els.adminScatterCount.value) || 3)),
-          scatterTargetPayout: Math.max(0, Math.round(Number(els.adminScatterTarget.value) || 0)),
           suspended: els.adminSuspended.checked
         }
       });
       if (res.ok) {
         renderAdminDashboard();
-        els.adminFeedback.textContent = `Pengaturan untuk "${adminSelectedUsername}" berhasil disimpan.`;
-        els.adminFeedback.classList.add('is-success');
-        els.adminFeedback.classList.remove('hidden');
+        showAdminSavedMsg(`Saldo & status akun "${adminSelectedUsername}" berhasil disimpan.`);
+      } else {
+        showAdminSavedMsg(res.error || 'Gagal menyimpan.', false);
       }
     });
 

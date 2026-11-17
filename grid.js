@@ -35,12 +35,13 @@ MG.Grid = (() => {
   function spinNewMatrix(opts = {}) {
     const playMode = opts.playMode || 'normal';
     const lossAllowSmallWin = Boolean(opts.lossAllowSmallWin);
+    const forceSmallWin = Boolean(opts.forceSmallWin);
     const forceScatterCount = Number(opts.forceScatterCount) || 0;
 
     matrix = createRandomMatrix();
 
     if (playMode === 'win') {
-      const hotPool = ['fa', 'zhong', 'bai', 'bamboo8', 'wan8', 'circle8'];
+      const hotPool = ['fa', 'zhong', 'bai', 'bird', 'wan_1', 'wan_2'];
       const hotId = hotPool[Math.floor(Math.random() * hotPool.length)];
       for (let c = 0; c < 3; c++) {
         const targetRow = Math.floor(Math.random() * ROWS);
@@ -58,10 +59,10 @@ MG.Grid = (() => {
     } else if (playMode === 'loss') {
       // Buat kolom 0 dan 1 tidak cocok agar tidak menang terus
       const col0Ids = new Set(matrix[0].map((t) => t.id));
-      const fallbackPool = ['bamboo2', 'wan2', 'circle2', 'bamboo5', 'wan5', 'circle5', 'bai'];
+      const fallbackPool = ['tiao_2', 'tiao_3', 'tong_2', 'tong_5', 'wan_1', 'wan_2', 'wan_3', 'bai'];
       for (let r = 0; r < ROWS; r++) {
         if (matrix[1][r].id !== 'scatter' && col0Ids.has(matrix[1][r].id)) {
-          const alt = fallbackPool.find((id) => !col0Ids.has(id)) || 'circle2';
+          const alt = fallbackPool.find((id) => !col0Ids.has(id)) || 'tiao_2';
           matrix[1][r] = makeTile(alt, false);
         }
         matrix[1][r].isGold = false;
@@ -69,10 +70,30 @@ MG.Grid = (() => {
       }
       // Tarik ulur: sesekali beri kemenangan kecil (simbol rendah di kolom 0-2)
       if (lossAllowSmallWin) {
-        const smallPool = ['bamboo2', 'wan2', 'circle2'];
+        const smallPool = ['tiao_2', 'tiao_3', 'tong_2', 'tong_5', 'wan_3'];
         const smallId = smallPool[Math.floor(Math.random() * smallPool.length)];
         for (let c = 0; c < 3; c++) {
           const r = Math.floor(Math.random() * ROWS);
+          matrix[c][r] = makeTile(smallId, false);
+        }
+      }
+    } else if (forceSmallWin) {
+      // Pastikan pecahan kecil dari simbol rendah (tanpa jackpot besar)
+      const col0Ids = new Set(matrix[0].map((t) => t.id));
+      const fallbackPool = ['tiao_2', 'tiao_3', 'tong_2', 'tong_5', 'wan_1', 'wan_2', 'wan_3'];
+      for (let r = 0; r < ROWS; r++) {
+        if (matrix[1][r].id !== 'scatter' && col0Ids.has(matrix[1][r].id)) {
+          const alt = fallbackPool.find((id) => !col0Ids.has(id)) || 'tiao_2';
+          matrix[1][r] = makeTile(alt, false);
+        }
+        matrix[1][r].isGold = false;
+        matrix[2][r].isGold = false;
+      }
+      const smallPool = ['tiao_2', 'tiao_3', 'tong_2', 'tong_5', 'wan_3'];
+      const smallId = smallPool[Math.floor(Math.random() * smallPool.length)];
+      for (let c = 0; c < 3; c++) {
+        const r = Math.floor(Math.random() * ROWS);
+        if (matrix[c][r].id !== 'scatter') {
           matrix[c][r] = makeTile(smallId, false);
         }
       }

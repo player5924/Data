@@ -11,20 +11,32 @@ MG.Cascade = (() => {
   }
 
   async function runCascadeSequence(options) {
-    const { spinCost, isBonusMode, onStepWin, onMultiplierChange } = options;
+    const { spinCost, isBonusMode, onStepWin, onMultiplierChange, maxSpinWin, exactLastSpin } = options;
     let cascadeIndex = 0;
     let totalSpinWin = 0;
+    const hasCap = typeof maxSpinWin === 'number';
 
     while (true) {
       const matrix = MG.Grid.getMatrix();
       const result = MG.WinSystem.evaluate(matrix, spinCost);
 
       if (!result.hasWin) break;
+      if (hasCap && totalSpinWin >= maxSpinWin) break;
 
       const multInfo = getMultiplierForCascade(cascadeIndex, isBonusMode);
       if (onMultiplierChange) onMultiplierChange(multInfo);
 
-      const stepWin = result.totalBaseWin * multInfo.value;
+      const rawStepWin = result.totalBaseWin * multInfo.value;
+      let stepWin = rawStepWin;
+      if (hasCap) {
+        const remaining = Math.max(0, maxSpinWin - totalSpinWin);
+        if (rawStepWin > remaining) {
+          stepWin = exactLastSpin && cascadeIndex === 0
+            ? remaining
+            : Math.min(remaining, Math.max(10, Math.round(remaining * 0.65 / 10) * 10));
+          if (stepWin <= 0) stepWin = remaining;
+        }
+      }
       totalSpinWin += stepWin;
 
       // 1. Tampilkan efek garis kombinasi & animasi kemenangan

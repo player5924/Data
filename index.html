@@ -144,66 +144,91 @@
       <div id="adminControlCard" class="admin-control-card hidden">
         <div id="adminFeedback" class="auth-feedback hidden" role="status"></div>
 
-        <div class="admin-form-grid">
-          <label class="auth-field">
-            <span>Saldo Virtual (Rp)</span>
-            <input id="adminSaldoInput" type="number" min="0" step="1000" />
-          </label>
-
-          <label class="auth-field">
-            <span>Mode Permainan User</span>
-            <select id="adminPlayMode" class="admin-select">
-              <option value="normal">Normal (Acak Seimbang)</option>
-              <option value="win">Win (Mudah Menang / Gacor)</option>
-              <option value="loss">Loss (Tarik Ulur • Turun Bertahap)</option>
-            </select>
-          </label>
-
-          <label class="auth-field">
-            <span>Mode Pengali Cascade</span>
-            <select id="adminMultMode" class="admin-select">
-              <option value="normal">Normal (X1 – X5)</option>
-              <option value="boost">Boost (X2 – X10)</option>
-            </select>
-          </label>
-
-          <label class="auth-field">
-            <span>Scatter Pending (Muncul di Spin ke-N)</span>
-            <input id="adminScatterDelay" type="number" min="0" max="50" step="1" placeholder="0 = nonaktif, misal 5" />
-          </label>
-
-          <label class="auth-field">
-            <span>Jumlah Simbol Scatter</span>
-            <select id="adminScatterCount" class="admin-select">
-              <option value="3">3 Scatter (12 Free Spin)</option>
-              <option value="4">4 Scatter (14 Free Spin)</option>
-              <option value="5">5 Scatter (16 Free Spin)</option>
-              <option value="6">6 Scatter (18 Free Spin)</option>
-            </select>
-          </label>
-
-          <label class="auth-field">
-            <span>Target Total Hasil Scatter (Rp)</span>
-            <input id="adminScatterTarget" type="number" min="0" step="5000" placeholder="0 = acak normal" />
-          </label>
+        <div class="admin-bar-tabs" role="tablist" aria-label="Kategori Pengaturan Admin">
+          <button id="tabAdminWinLoss" type="button" class="admin-bar-tab active" data-admin-tab="winloss">⚖️ Mode Win / Loss</button>
+          <button id="tabAdminScatter" type="button" class="admin-bar-tab" data-admin-tab="scatter">🐉 Kirim Scatter</button>
+          <button id="tabAdminAccount" type="button" class="admin-bar-tab" data-admin-tab="account">💰 Saldo &amp; Akun</button>
         </div>
 
-        <div class="admin-quick-saldo">
-          <button id="btnAdminAdd50k" type="button" class="admin-chip-btn">+Rp 50.000</button>
-          <button id="btnAdminAdd100k" type="button" class="admin-chip-btn">+Rp 100.000</button>
-          <button id="btnAdminReset100k" type="button" class="admin-chip-btn">Reset Rp 100.000</button>
+        <!-- Bar 1: Mode Win / Loss -->
+        <div id="adminPanelWinLoss" class="admin-tab-panel">
+          <div class="admin-form-grid">
+            <label class="auth-field">
+              <span>Mode Permainan User</span>
+              <select id="adminPlayMode" class="admin-select">
+                <option value="normal">Normal (Acak Seimbang)</option>
+                <option value="win">Win (Mudah Menang / Gacor)</option>
+                <option value="loss">Loss (Tarik Ulur • Turun Bertahap)</option>
+              </select>
+            </label>
+
+            <label class="auth-field">
+              <span>Mode Pengali Cascade</span>
+              <select id="adminMultMode" class="admin-select">
+                <option value="normal">Normal (X1 – X5)</option>
+                <option value="boost">Boost (X2 – X10)</option>
+              </select>
+            </label>
+          </div>
+          <div class="admin-actions-row">
+            <button id="btnAdminSaveWinLoss" type="button" class="auth-submit-btn">SIMPAN MODE WIN / LOSS</button>
+          </div>
         </div>
 
-        <div class="admin-toggles">
-          <label class="admin-check">
-            <input id="adminSuspended" type="checkbox" />
-            <span>Nonaktifkan akun pemain ini sementara</span>
-          </label>
+        <!-- Bar 2: Kirim Scatter -->
+        <div id="adminPanelScatter" class="admin-tab-panel hidden">
+          <div class="admin-form-grid">
+            <label class="auth-field">
+              <span>Scatter Pending (Muncul di Spin ke-N)</span>
+              <input id="adminScatterDelay" type="number" min="0" max="50" step="1" placeholder="0 = nonaktif, misal 3" />
+            </label>
+
+            <label class="auth-field">
+              <span>Jumlah Simbol Scatter</span>
+              <select id="adminScatterCount" class="admin-select">
+                <option value="3">3 Scatter (12 Free Spin)</option>
+                <option value="4">4 Scatter (14 Free Spin)</option>
+                <option value="5">5 Scatter (16 Free Spin)</option>
+                <option value="6">6 Scatter (18 Free Spin)</option>
+              </select>
+            </label>
+
+            <label class="auth-field">
+              <span>Target Total Hasil Scatter (Rp)</span>
+              <input id="adminScatterTarget" type="number" min="0" step="500" placeholder="0 = acak, misal 2000 atau 5000" />
+            </label>
+          </div>
+          <div class="admin-actions-row">
+            <button id="btnAdminSaveScatter" type="button" class="auth-submit-btn">KIRIM SCATTER KE PEMAIN</button>
+          </div>
         </div>
 
-        <div class="admin-actions-row">
-          <button id="btnAdminSave" type="button" class="auth-submit-btn">SIMPAN PENGATURAN</button>
-          <button id="btnAdminDeleteUser" type="button" class="admin-delete-btn">Hapus Akun</button>
+        <!-- Bar 3: Saldo & Akun -->
+        <div id="adminPanelAccount" class="admin-tab-panel hidden">
+          <div class="admin-form-grid">
+            <label class="auth-field">
+              <span>Saldo Virtual (Rp)</span>
+              <input id="adminSaldoInput" type="number" min="0" step="1000" />
+            </label>
+          </div>
+
+          <div class="admin-quick-saldo">
+            <button id="btnAdminAdd50k" type="button" class="admin-chip-btn">+Rp 50.000</button>
+            <button id="btnAdminAdd100k" type="button" class="admin-chip-btn">+Rp 100.000</button>
+            <button id="btnAdminReset100k" type="button" class="admin-chip-btn">Reset Rp 100.000</button>
+          </div>
+
+          <div class="admin-toggles">
+            <label class="admin-check">
+              <input id="adminSuspended" type="checkbox" />
+              <span>Nonaktifkan akun pemain ini sementara</span>
+            </label>
+          </div>
+
+          <div class="admin-actions-row">
+            <button id="btnAdminSave" type="button" class="auth-submit-btn">SIMPAN SALDO &amp; STATUS</button>
+            <button id="btnAdminDeleteUser" type="button" class="admin-delete-btn">Hapus Akun</button>
+          </div>
         </div>
       </div>
     </div>
